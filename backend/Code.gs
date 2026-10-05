@@ -430,6 +430,33 @@ function requireAuth_(token, entity, action) {
 /* Database                                                                    */
 /* -------------------------------------------------------------------------- */
 
+function setupBrainbanqueGSheet() {
+  try {
+    const result = initializeDatabase_();
+
+    Logger.log('========================================');
+    Logger.log('BrainBanque Database Setup Completed');
+    Logger.log('========================================');
+    Logger.log('Spreadsheet ID: ' + result.spreadsheetId);
+    Logger.log('Spreadsheet URL: ' + result.spreadsheetUrl);
+    Logger.log('Sheets created/verified:');
+
+    result.sheets.forEach(function(sheetName) {
+      Logger.log('✓ ' + sheetName);
+    });
+
+    Logger.log('========================================');
+    Logger.log('Setup completed successfully.');
+    Logger.log('========================================');
+
+    return result;
+  } catch (error) {
+    Logger.log('DATABASE SETUP FAILED');
+    Logger.log(error.message);
+    throw error;
+  }
+}
+
 function initializeDatabase_() {
   const spreadsheet = getDatabaseSpreadsheet_();
 
