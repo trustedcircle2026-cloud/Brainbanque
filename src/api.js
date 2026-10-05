@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || ''
+const API_URL = import.meta.env.VITE_API_URL || 'https://script.google.com/macros/s/AKfycbxBA2rbWC79Ze9KIQekouEh1X7oCSsvya7XMOKSV7Ixmt4K38B6HYgp8EMSUxBl2Pp33w/exec'
 
 async function request(action, options = {}) {
   if (!API_URL) {
