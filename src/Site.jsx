@@ -54,7 +54,7 @@ function Footer(){
         <div className="footer-brand"><img src={logo} alt="BrainBanque"/><span><strong><i>Brain</i><b>Banque</b></strong><small>Global Solutions (P) Ltd</small></span></div>
         <p>Professional expertise. Clear direction. Coordinated execution.</p>
       </div>
-      <div><h4>Explore</h4>{nav.map(([label,href])=><a key={href} href={href}>{label}</a>)}</div>
+      <div><h4>Explore</h4>{nav.map(([label,href])=><a key={href} href={pageHref(href)} onMouseEnter={()=>warmPage(href)} onFocus={()=>warmPage(href)}>{label}</a>)}</div>
       <div><h4>Connect</h4><a href={whatsapp} target="_blank" rel="noreferrer"><MessageCircle size={14}/> WhatsApp</a><a href={email}><Mail size={14}/> Email us</a><a href={pageHref('index.html')+'#/erp'}>ERP Login</a></div>
       <div><h4>Start a conversation</h4><p>Tell us what you need help with and we will identify the right path.</p><a className="footer-cta" href={pageHref('contact.html')}>Contact BrainBanque <ArrowRight size={15}/></a></div>
     </div>
