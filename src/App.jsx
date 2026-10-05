@@ -114,11 +114,47 @@ function App() {
     </main>
 
     <footer className="footer">
-      <div className="footer-brand-card">
-        <img className="footer-logo-image" src={`${import.meta.env.BASE_URL}logo/Brainbanque-logo%20without%20BG.jpg`} alt="BrainBanque Global Solutions" />
+      <div className="footer-main">
+        <div className="footer-brand-block">
+          <div className="footer-brand-card">
+            <img className="footer-logo-image" src={`${import.meta.env.BASE_URL}logo/Brainbanque-logo%20without%20BG.jpg`} alt="BrainBanque Global Solutions" />
+          </div>
+          <div className="footer-company-name">
+            <strong><span className="brand-brain">Brain</span><span className="brand-banque">Banque</span></strong>
+            <small>Global Solutions (P) Ltd</small>
+          </div>
+          <p className="footer-tagline">Advisory. Expertise. Execution.</p>
+        </div>
+
+        <div className="footer-column">
+          <h4>Company</h4>
+          <a href="#about">About</a>
+          <a href="#services">Services</a>
+          <a href="#expertise">Expertise</a>
+          <a href="#how-we-work">How we work</a>
+        </div>
+
+        <div className="footer-column">
+          <h4>Connect</h4>
+          <a href="#contact">Contact</a>
+          <a href="#contact">Discuss a requirement</a>
+          <a href="#contact">Start a conversation</a>
+        </div>
+
+        <div className="footer-column footer-action">
+          <h4>Work with us</h4>
+          <p>Tell us what you need to get done.</p>
+          <a className="footer-cta" href="#contact">Discuss a requirement <ArrowRight size={15}/></a>
+        </div>
       </div>
-      <p>Advisory. Expertise. Execution.</p>
-      <div>© {new Date().getFullYear()} BrainBanque. All rights reserved.</div>
+
+      <div className="footer-bottom">
+        <div>© {new Date().getFullYear()} BrainBanque Global Solutions (P) Ltd. All rights reserved.</div>
+        <div className="footer-legal">
+          <a href="#privacy">Privacy Policy</a>
+          <a href="#terms">Terms of Use</a>
+        </div>
+      </div>
     </footer>
   </div>
 }
