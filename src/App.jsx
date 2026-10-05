@@ -113,7 +113,13 @@ function App() {
       </section>
     </main>
 
-    <footer className="footer"><div className="brand"><img className="brand-logo footer-logo" src={`${import.meta.env.BASE_URL}logo/Brainbanque-logo%20without%20BG.jpg`} alt="BrainBanque Global Solutions" /><span className="brand-name"><strong><span className="brand-brain">Brain</span><span className="brand-banque">Banque</span></strong><small>Global Solutions (P) Ltd</small></span></div><p>Advisory. Expertise. Execution.</p><div>© {new Date().getFullYear()} Brainbanque. All rights reserved.</div></footer>
+    <footer className="footer">
+      <div className="footer-brand-card">
+        <img className="footer-logo-image" src={`${import.meta.env.BASE_URL}logo/Brainbanque-logo%20without%20BG.jpg`} alt="BrainBanque Global Solutions" />
+      </div>
+      <p>Advisory. Expertise. Execution.</p>
+      <div>© {new Date().getFullYear()} BrainBanque. All rights reserved.</div>
+    </footer>
   </div>
 }
 export default App
