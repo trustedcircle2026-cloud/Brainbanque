@@ -17,7 +17,7 @@ const CONFIG = {
   DRIVE_ROOT_FOLDER_ID: '1U-mVhbMH6t3TdVFoLKUY_4BF1MZzcRN9',
 
   // Add the Google Sheet ID after creating/selecting the master database.
-  DATABASE_SPREADSHEET_ID: '',
+  DATABASE_SPREADSHEET_ID: '18ssVrjnR6fhMkwVcp8zl45scpIbVk15tu4jURgwEous',
 
   // Allowed origins. Keep '*' during initial development.
   // Restrict this to the production domain before launch.
