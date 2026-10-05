@@ -8,6 +8,7 @@ async function call(action, body = null, token = '') {
 }
 export const erpApi={
  login:(email,password)=>call('login',{email,password}),
+ adminLogin:(password)=>call('adminLogin',{password}),
  logout:(token)=>call('logout',{token}),
  me:(token)=>call('me',null,token),
  list:(entity,token,filters)=>{ const qs = new URLSearchParams({action:'list',entity,token}); return fetch(API_URL+'?'+qs).then(r=>r.json()).then(x=>{if(!x.success)throw new Error(x.error||'Request failed');return filters?x.data.filter(r=>Object.entries(filters).every(([k,v])=>String(r[k]||'').toLowerCase()===String(v).toLowerCase())):x.data}) },
