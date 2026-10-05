@@ -31,8 +31,8 @@ function Header(){
     <nav className="site-nav">
       {nav.map(([label,href])=><a key={href} href={href}>{label}</a>)}
       <div className="header-contact">
-        <a href={whatsapp} target="_blank" rel="noreferrer"><MessageCircle size={14}/>9003060652</a>
-        <a href={email}><Mail size={14}/>Info@Brainbanque.in</a>
+        <a className="header-icon-link" href={whatsapp} target="_blank" rel="noreferrer" title="WhatsApp: 9003060652" aria-label="WhatsApp: 9003060652"><MessageCircle size={17}/></a>
+        <a className="header-icon-link" href={email} title="Email: Info@Brainbanque.in" aria-label="Email: Info@Brainbanque.in"><Mail size={17}/></a>
       </div>
       <a className="site-login" href="index.html#/erp">Login <ArrowRight size={15}/></a>
     </nav>
@@ -118,7 +118,22 @@ function Contact(){
   const [form,setForm]=useState({name:'',email:'',phone:'',company:'',service:'',message:''})
   const [sent,setSent]=useState(false)
   const submit=async e=>{e.preventDefault();try{await api.submitEnquiry(form);setSent(true)}catch{setSent(true)}}
-  return <Page title="Tell us what you need help with." kicker="CONTACT"><div className="contact-layout"><div className="contact-details"><h2>Let's identify the right path forward.</h2><a href={whatsapp} target="_blank" rel="noreferrer"><MessageCircle/>9003060652</a><a href={email}><Mail/>Info@Brainbanque.in</a><p>For enquiries, advisory requirements and professional service support, reach us directly or submit the form.</p></div><form className="contact-form" onSubmit={submit}>{sent?<div className="success-box"><CheckCircle2 size={34}/><h3>Requirement received.</h3><p>Thank you. We will review the details and get back to you.</p></div>:<><label>Name<input required value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label><div className="form-two"><label>Email<input required type="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})}/></label><label>Phone<input value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})}/></label></div><label>Company<input value={form.company} onChange={e=>setForm({...form,company:e.target.value})}/></label><label>Requirement<textarea required rows="5" value={form.message} onChange={e=>setForm({...form,message:e.target.value})}/></label><button className="primary-btn" type="submit">Send requirement <ArrowRight size={16}/></button></>}</form></div></Page>
+  return <Page title="Tell us what you need help with." kicker="CONTACT"><div className="contact-layout"><div className="contact-details">
+        <span className="site-kicker">DIRECT CONTACT</span>
+        <h2>Let's identify the right path forward.</h2>
+        <p>For enquiries, advisory requirements and professional service support, you can reach BrainBanque directly or submit the enquiry form. We will review your requirement and identify the appropriate professional path.</p>
+        <div className="contact-cards">
+          <a className="contact-card" href={whatsapp} target="_blank" rel="noreferrer">
+            <span className="contact-card-icon"><MessageCircle/></span>
+            <span><small>WHATSAPP</small><strong>9003060652</strong><em>Start a conversation <ArrowRight size={14}/></em></span>
+          </a>
+          <a className="contact-card" href={email}>
+            <span className="contact-card-icon"><Mail/></span>
+            <span><small>EMAIL</small><strong>Info@Brainbanque.in</strong><em>Send an enquiry <ArrowRight size={14}/></em></span>
+          </a>
+        </div>
+        <div className="contact-note"><CheckCircle2 size={17}/><span>Suitable for accounting, taxation, audit, corporate, legal, advisory and compliance requirements.</span></div>
+      </div><form className="contact-form" onSubmit={submit}>{sent?<div className="success-box"><CheckCircle2 size={34}/><h3>Requirement received.</h3><p>Thank you. We will review the details and get back to you.</p></div>:<><label>Name<input required value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label><div className="form-two"><label>Email<input required type="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})}/></label><label>Phone<input value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})}/></label></div><label>Company<input value={form.company} onChange={e=>setForm({...form,company:e.target.value})}/></label><label>Requirement<textarea required rows="5" value={form.message} onChange={e=>setForm({...form,message:e.target.value})}/></label><button className="primary-btn" type="submit">Send requirement <ArrowRight size={16}/></button></>}</form></div></Page>
 }
 
 function Page({title,kicker,children}){
