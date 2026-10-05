@@ -63,12 +63,11 @@ function App() {
       </a>
       <button className="menu-btn" onClick={()=>setMenu(!menu)} aria-label="Menu">{menu?<X/>:<Menu/>}</button>
       <nav className={menu?'nav-links open':'nav-links'}>
-        {['Services','Expertise','How we work','Contact'].map(x=><a key={x} href={'#'+x.toLowerCase().replaceAll(' ','-')} onClick={()=>setMenu(false)}>{x}</a>)}
         <div className="header-contact">
           <a href="https://wa.me/919003060652" target="_blank" rel="noreferrer" aria-label="WhatsApp 9003060652"><MessageCircle size={15}/><span>9003060652</span></a>
           <a href="mailto:Info@Brainbanque.in" aria-label="Email Info@Brainbanque.in"><Mail size={15}/><span>Info@Brainbanque.in</span></a>
         </div>
-        <a className="nav-cta" href="#contact" onClick={()=>setMenu(false)}>Discuss a requirement <ArrowRight size={16}/></a>
+        <a className="nav-cta login-btn" href="#/erp" onClick={()=>setMenu(false)}>Login <ArrowRight size={16}/></a>
       </nav>
     </header>
 
