@@ -31,3 +31,25 @@
 @media(max-width:900px){.nav{padding:0 5vw}.header-contact{order:2}.nav-links .nav-cta{order:3}.menu-btn{display:block;color:var(--ink)}.nav-links{display:none;position:absolute;left:0;right:0;top:76px;background:var(--paper);padding:20px 5vw 28px;border-bottom:1px solid var(--line);flex-direction:column;align-items:stretch}.nav-links.open{display:flex}.header-contact{order:initial;display:flex;justify-content:center;flex-wrap:wrap;width:100%;padding:7px}.header-contact a{flex:1;justify-content:center}.nav-cta{justify-content:center}.hero{grid-template-columns:1fr;padding:70px 7vw;gap:50px}.hero-panel{height:360px}.trust-strip{padding:18px 7vw;gap:20px;align-items:flex-start;flex-direction:column}.trust-strip div{gap:18px;flex-wrap:wrap}.section{padding:68px 7vw}.intro,.contact{grid-template-columns:1fr;gap:45px}.service-grid{grid-template-columns:1fr 1fr}.service-card:nth-child(3n+1){border-left:0}.service-card:nth-child(odd){border-left:1px solid var(--line)}.expertise-grid{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr 1fr}.footer-main{grid-template-columns:1fr 1fr;gap:40px}.footer-brand-block{grid-column:1/-1}.footer-brand-card{min-width:0;width:100%;max-width:420px;height:92px}.footer-logo-image{width:92px;height:68px;max-width:100%}.footer-company-name{min-width:0}.footer-company-name strong{font-size:27px}.footer-company-name small{font-size:9px;letter-spacing:.08em}.footer-bottom{flex-direction:column}.footer-legal{gap:18px}}
 @media(max-width:600px){.brand-logo{height:39px;max-width:160px}.header-logo{height:36px;max-width:58px}.footer-logo{height:36px;max-width:58px}.brand-name{min-width:0}.brand-name strong{font-size:34px}.brand-banque{margin-left:5px}.brand-name small{font-size:10px;letter-spacing:.09em;margin-top:5px}.hero h1{font-size:55px}.hero{min-height:500px;padding:45px 6vw}.hero-panel{height:330px}.hero-logo-orb{width:330px;height:300px}.hero-logo-orb img{width:250px;height:195px}.logo-smile{width:240px;height:120px}.section{padding:58px 6vw}.service-grid,.expertise-grid,.steps,.form-row{grid-template-columns:1fr}.service-card:nth-child(odd){border-left:0}.service-card{border-right:0}.service-card h3{margin-top:30px}.section-head{align-items:flex-start;gap:20px;flex-direction:column}.statement-box{padding:25px;align-items:flex-start}.statement-box p{font-size:19px}.form{padding:24px}}
 .login-btn{padding:11px 18px;min-width:88px;justify-content:center}.login-btn:hover{background:#24564d}
+
+/* Hidden administrator access in the public footer */
+.footer-admin-access{grid-column:1/-1;margin-top:4px;padding-top:18px;border-top:1px solid rgba(255,255,255,.09);display:flex;justify-content:flex-end}
+.footer-admin-trigger{border:0;background:transparent;color:#718983;padding:4px 0;font:inherit;font-size:9px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;display:flex;gap:10px;align-items:center}
+.footer-admin-trigger span:last-child{opacity:.7}
+.footer-admin-trigger:hover{color:#fff}
+.footer-admin-form{margin-top:12px;margin-left:auto;width:min(360px,100%);padding:18px;background:#fff;border:1px solid rgba(255,255,255,.12);border-radius:7px;color:#18211f;box-shadow:0 12px 35px rgba(0,0,0,.2)}
+.footer-admin-form>div{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.footer-admin-form strong{font-size:12px}
+.footer-admin-form small{font-size:9px;color:#7b8580;line-height:1.5}
+.footer-admin-form input{width:100%;padding:11px 12px;border:1px solid #d4dad5;border-radius:5px;background:#fff;font:inherit;font-size:12px;box-sizing:border-box}
+.footer-admin-form>button{margin-top:9px;width:100%;border:0;border-radius:5px;padding:11px 13px;background:#173b35;color:#fff;font:inherit;font-size:11px;font-weight:700;display:flex;justify-content:center;align-items:center;gap:7px;cursor:pointer}
+.footer-admin-form>button:disabled{opacity:.6;cursor:wait}
+.footer-admin-error{margin-top:9px;padding:8px 10px;border-radius:4px;background:#fff0ef;color:#9d3934;font-size:9px;line-height:1.5}
+.erp-login-brand{width:100%;margin:0 0 34px;text-align:center}
+.erp-login-brand img{display:block;width:100%;height:auto;max-height:150px;object-fit:contain;object-position:center}
+@media(max-width:600px){
+  .footer-admin-access{justify-content:flex-start}
+  .footer-admin-form{width:100%}
+  .erp-login-brand{margin-bottom:28px}
+  .erp-login-brand img{max-height:115px}
+}
