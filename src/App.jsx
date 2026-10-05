@@ -73,7 +73,6 @@ function App() {
             <div className="logo-smile"></div>
             <img src={`${import.meta.env.BASE_URL}logo/Brainbanque-logo%20without%20BG.jpg`} alt="BrainBanque Global Solutions" />
           </div>
-          <div className="panel-bottom"><strong>One coordinated team.</strong><span>Multiple professional disciplines.</span></div>
         </div>
       </section>
 
