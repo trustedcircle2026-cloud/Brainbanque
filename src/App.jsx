@@ -61,6 +61,7 @@ function App() {
       const session = await erpApi.adminLogin(adminPassword)
       localStorage.setItem('bb_session', JSON.stringify(session))
       window.location.hash = '#/erp-admin'
+      window.location.reload()
     } catch (err) {
       setAdminError(err.message || 'Unable to sign in.')
     } finally {
