@@ -66,7 +66,6 @@ function App() {
           </div>
         </div>
         <div className="hero-panel">
-          <div className="panel-top"><span>BB / 01</span><span>ADVISORY PLATFORM</span></div>
           <div className="hero-logo-orb" aria-label="BrainBanque logo">
             <div className="logo-ring logo-ring-one"></div>
             <div className="logo-ring logo-ring-two"></div>
