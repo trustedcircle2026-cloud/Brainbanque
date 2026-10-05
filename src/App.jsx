@@ -118,10 +118,10 @@ function App() {
         <div className="footer-brand-block">
           <div className="footer-brand-card">
             <img className="footer-logo-image" src={`${import.meta.env.BASE_URL}logo/Brainbanque-logo%20without%20BG.jpg`} alt="BrainBanque Global Solutions" />
-          </div>
-          <div className="footer-company-name">
-            <strong><span className="brand-brain">Brain</span><span className="brand-banque">Banque</span></strong>
-            <small>Global Solutions (P) Ltd</small>
+            <div className="footer-company-name">
+              <strong><span className="brand-brain">Brain</span><span className="brand-banque">Banque</span></strong>
+              <small>Global Solutions (P) Ltd</small>
+            </div>
           </div>
           <p className="footer-tagline">Advisory. Expertise. Execution.</p>
         </div>
