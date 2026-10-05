@@ -1,0 +1,17 @@
+const API_URL = import.meta.env.VITE_API_URL || ''
+async function call(action, body = null, token = '') {
+  if (!API_URL) throw new Error('VITE_API_URL is not configured.')
+  const url = new URL(API_URL); url.searchParams.set('action', action)
+  if (token && !body) url.searchParams.set('token', token)
+  const r = await fetch(url,{method:body?'POST':'GET',headers:body?{'Content-Type':'text/plain;charset=utf-8'}:undefined,body:body?JSON.stringify({...body,token}):undefined})
+  const data=await r.json(); if(!data.success) throw new Error(data.error||'Request failed'); return data.data
+}
+export const erpApi={
+ login:(email,name)=>call('login',{email,name}),
+ logout:(token)=>call('logout',{token}),
+ me:(token)=>call('me',null,token),
+ list:(entity,token,filters)=>call('list',null,token).then(rows=>filters?rows.filter(r=>Object.entries(filters).every(([k,v])=>String(r[k]||'').toLowerCase()===String(v).toLowerCase())):rows),
+ create:(entity,data,token)=>call('create',{entity,data},token),
+ update:(entity,id,data,token)=>call('update',{entity,id,data},token),
+ delete:(entity,id,token)=>call('delete',{entity,id},token)
+}
