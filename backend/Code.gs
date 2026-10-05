@@ -23,6 +23,10 @@ const CONFIG = {
   // Restrict this to the production domain before launch.
   ALLOWED_ORIGINS: '*',
 
+  // Set these before production. Leave empty during first-time setup.
+  ADMIN_EMAIL: '',
+  SESSION_TTL_SECONDS: 21600,
+
   SHEETS: {
     SETTINGS: 'Settings',
     SERVICES: 'Services',
@@ -57,10 +61,10 @@ function doGet(e) {
         return json_({ success: true, data: bootstrap_() });
 
       case 'list':
-        return json_({
-          success: true,
-          data: listRecords_(e.parameter.entity, e.parameter.filters || '')
-        });
+        return json_({ success: true, data: listRecords_(e.parameter.entity, e.parameter.filters || '', getBearerToken_(e)) });
+
+      case 'me':
+        return json_({ success: true, data: getSessionUser_(getBearerToken_(e)) });
 
       default:
         return json_({ success: false, error: 'Unknown action', action: action }, 400);
@@ -99,13 +103,21 @@ function doPost(e) {
         return json_({ success: true, data: initializeDatabase_() });
 
       case 'create':
-        return json_({ success: true, data: createRecord_(body.entity, body.data || {}) });
+        requireAuth_(body.token, body.entity, 'create');
+        return json_({ success: true, data: createRecordAuthenticated_(body.entity, body.data || {}, body.token) });
 
       case 'update':
-        return json_({ success: true, data: updateRecord_(body.entity, body.id, body.data || {}) });
+        requireAuth_(body.token, body.entity, 'update');
+        return json_({ success: true, data: updateRecordAuthenticated_(body.entity, body.id, body.data || {}, body.token) });
 
       case 'delete':
-        return json_({ success: true, data: deleteRecord_(body.entity, body.id) });
+        return json_({ success: true, data: deleteRecord_(body.entity, body.id, getBearerToken_(e)) });
+
+      case 'login':
+        return json_({ success: true, data: login_(body.email, body.name) });
+
+      case 'logout':
+        return json_({ success: true, data: logout_(body.token) });
 
       default:
         return json_({ success: false, error: 'Unknown POST action', action: action }, 400);
@@ -208,7 +220,8 @@ function getEntitySheet_(entity) {
   return sheet;
 }
 
-function listRecords_(entity, filters) {
+function listRecords_(entity, filters, token) {
+  requireAuth_(token, entity, 'read');
   const sheet = getEntitySheet_(entity);
   let rows = readObjects_(sheet);
   if (filters) {
@@ -225,6 +238,7 @@ function listRecords_(entity, filters) {
 }
 
 function createRecord_(entity, input) {
+  requireAuth_('', entity, 'create');
   const sheet = getEntitySheet_(entity);
   const id = clean_(input.ID || input.id) || generateId_(String(entity).slice(0, 3).toUpperCase());
   const data = Object.assign({}, input, { ID: id, id: id });
@@ -240,6 +254,7 @@ function createRecord_(entity, input) {
 }
 
 function updateRecord_(entity, id, patch) {
+  requireAuth_('', entity, 'update');
   const sheet = getEntitySheet_(entity);
   const rows = sheet.getDataRange().getValues();
   if (rows.length < 2) throw new Error('Record not found.');
@@ -262,7 +277,8 @@ function updateRecord_(entity, id, patch) {
   throw new Error('Record not found: ' + id);
 }
 
-function deleteRecord_(entity, id) {
+function deleteRecord_(entity, id, token) {
+  requireAuth_(token, entity, 'delete');
   const sheet = getEntitySheet_(entity);
   const rows = sheet.getDataRange().getValues();
   const headers = rows[0];
@@ -282,6 +298,83 @@ function readRowObject_(headers, row) {
   const object = {};
   headers.forEach(function(header, index) { object[header] = row[index]; });
   return object;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Authentication & Authorization                                              */
+/* -------------------------------------------------------------------------- */
+
+function login_(email, name) {
+  email = clean_(email).toLowerCase();
+  name = clean_(name);
+
+  if (!email || email.indexOf('@') < 1) throw new Error('Valid email is required.');
+
+  const props = PropertiesService.getScriptProperties();
+  const admin = clean_(CONFIG.ADMIN_EMAIL).toLowerCase();
+  const role = admin && email === admin ? 'Admin' : 'Staff';
+
+  const token = Utilities.getUuid() + '-' + Utilities.getUuid();
+  const now = Date.now();
+
+  props.setProperty('SESSION_' + token, JSON.stringify({
+    token: token,
+    email: email,
+    name: name || email.split('@')[0],
+    role: role,
+    createdAt: now,
+    expiresAt: now + CONFIG.SESSION_TTL_SECONDS * 1000
+  }));
+
+  return {
+    token: token,
+    user: { email: email, name: name || email.split('@')[0], role: role },
+    expiresAt: new Date(now + CONFIG.SESSION_TTL_SECONDS * 1000).toISOString()
+  };
+}
+
+function logout_(token) {
+  if (token) PropertiesService.getScriptProperties().deleteProperty('SESSION_' + token);
+  return { loggedOut: true };
+}
+
+function getBearerToken_(e) {
+  const header = e && e.parameter ? e.parameter.token : '';
+  return clean_(header);
+}
+
+function getSessionUser_(token) {
+  const session = readSession_(token);
+  if (!session) throw new Error('Session expired or invalid.');
+  return { email: session.email, name: session.name, role: session.role, expiresAt: new Date(session.expiresAt).toISOString() };
+}
+
+function readSession_(token) {
+  if (!token) return null;
+  const raw = PropertiesService.getScriptProperties().getProperty('SESSION_' + token);
+  if (!raw) return null;
+  const session = JSON.parse(raw);
+  if (Date.now() > Number(session.expiresAt)) {
+    PropertiesService.getScriptProperties().deleteProperty('SESSION_' + token);
+    return null;
+  }
+  return session;
+}
+
+function requireAuth_(token, entity, action) {
+  const session = readSession_(token);
+  if (!session) throw new Error('Authentication required.');
+
+  const adminOnly = ['users', 'settings', 'auditLog'];
+  if (adminOnly.indexOf(entity) >= 0 && session.role !== 'Admin') {
+    throw new Error('Administrator access required.');
+  }
+
+  if (action === 'delete' && session.role !== 'Admin') {
+    throw new Error('Administrator access required to delete records.');
+  }
+
+  return session;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -701,3 +794,13 @@ function errorResponse_(error) {
  * Execute as: Me
  * Who has access: Anyone
  */
+
+function createRecordAuthenticated_(entity, input, token) {
+  requireAuth_(token, entity, 'create');
+  return createRecord_(entity, input);
+}
+
+function updateRecordAuthenticated_(entity, id, patch, token) {
+  requireAuth_(token, entity, 'update');
+  return updateRecord_(entity, id, patch);
+}
