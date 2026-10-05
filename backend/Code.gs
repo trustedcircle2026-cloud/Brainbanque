@@ -48,31 +48,22 @@ function doGet(e) {
 
     switch (action) {
       case 'health':
-        return json_({
-          success: true,
-          app: CONFIG.APP_NAME,
-          status: 'ok',
-          timestamp: new Date().toISOString()
-        });
+        return json_({ success: true, app: CONFIG.APP_NAME, status: 'ok', timestamp: new Date().toISOString() });
 
       case 'services':
-        return json_({
-          success: true,
-          data: getServices_()
-        });
+        return json_({ success: true, data: getServices_() });
 
       case 'bootstrap':
+        return json_({ success: true, data: bootstrap_() });
+
+      case 'list':
         return json_({
           success: true,
-          data: bootstrap_()
+          data: listRecords_(e.parameter.entity, e.parameter.filters || '')
         });
 
       default:
-        return json_({
-          success: false,
-          error: 'Unknown action',
-          action: action
-        }, 400);
+        return json_({ success: false, error: 'Unknown action', action: action }, 400);
     }
   } catch (error) {
     return errorResponse_(error);
@@ -102,23 +93,22 @@ function doPost(e) {
 
     switch (action) {
       case 'submitEnquiry':
-        return json_({
-          success: true,
-          data: submitEnquiry_(body.data || {})
-        });
+        return json_({ success: true, data: submitEnquiry_(body.data || {}) });
 
       case 'initializeDatabase':
-        return json_({
-          success: true,
-          data: initializeDatabase_()
-        });
+        return json_({ success: true, data: initializeDatabase_() });
+
+      case 'create':
+        return json_({ success: true, data: createRecord_(body.entity, body.data || {}) });
+
+      case 'update':
+        return json_({ success: true, data: updateRecord_(body.entity, body.id, body.data || {}) });
+
+      case 'delete':
+        return json_({ success: true, data: deleteRecord_(body.entity, body.id) });
 
       default:
-        return json_({
-          success: false,
-          error: 'Unknown POST action',
-          action: action
-        }, 400);
+        return json_({ success: false, error: 'Unknown POST action', action: action }, 400);
     }
   } catch (error) {
     return errorResponse_(error);
@@ -190,6 +180,108 @@ function submitEnquiry_(input) {
     status: data.status,
     message: 'Thank you. Your enquiry has been received.'
   };
+}
+
+/* -------------------------------------------------------------------------- */
+/* ERP CRUD API                                                                */
+/* -------------------------------------------------------------------------- */
+
+const ENTITY_MAP = {
+  settings: CONFIG.SHEETS.SETTINGS,
+  services: CONFIG.SHEETS.SERVICES,
+  enquiries: CONFIG.SHEETS.ENQUIRIES,
+  clients: CONFIG.SHEETS.CLIENTS,
+  contacts: CONFIG.SHEETS.CONTACTS,
+  users: CONFIG.SHEETS.USERS,
+  engagements: CONFIG.SHEETS.ENGAGEMENTS,
+  tasks: CONFIG.SHEETS.TASKS,
+  documents: CONFIG.SHEETS.DOCUMENTS,
+  auditLog: CONFIG.SHEETS.AUDIT_LOG
+};
+
+function getEntitySheet_(entity) {
+  const key = clean_(entity);
+  const sheetName = ENTITY_MAP[key];
+  if (!sheetName) throw new Error('Unsupported entity: ' + key);
+  const sheet = getDatabaseSheet_(sheetName);
+  if (!sheet) throw new Error('Entity sheet not initialized: ' + sheetName);
+  return sheet;
+}
+
+function listRecords_(entity, filters) {
+  const sheet = getEntitySheet_(entity);
+  let rows = readObjects_(sheet);
+  if (filters) {
+    try {
+      const criteria = JSON.parse(filters);
+      rows = rows.filter(function(row) {
+        return Object.keys(criteria).every(function(key) {
+          return String(row[key] || '').toLowerCase() === String(criteria[key] || '').toLowerCase();
+        });
+      });
+    } catch (ignore) {}
+  }
+  return rows;
+}
+
+function createRecord_(entity, input) {
+  const sheet = getEntitySheet_(entity);
+  const id = clean_(input.ID || input.id) || generateId_(String(entity).slice(0, 3).toUpperCase());
+  const data = Object.assign({}, input, { ID: id, id: id });
+
+  if (!input.CreatedAt && !input.createdAt) {
+    data.CreatedAt = new Date();
+    data.createdAt = new Date();
+  }
+
+  appendObject_(sheet, data);
+  logAction_('CREATE_' + String(entity).toUpperCase(), id, data);
+  return data;
+}
+
+function updateRecord_(entity, id, patch) {
+  const sheet = getEntitySheet_(entity);
+  const rows = sheet.getDataRange().getValues();
+  if (rows.length < 2) throw new Error('Record not found.');
+
+  const headers = rows[0];
+  const idColumn = headers.indexOf('ID') >= 0 ? headers.indexOf('ID') : headers.indexOf('id');
+  if (idColumn < 0) throw new Error('Entity has no ID column.');
+
+  for (let r = 1; r < rows.length; r++) {
+    if (String(rows[r][idColumn]) === String(id)) {
+      Object.keys(patch).forEach(function(key) {
+        const c = headers.indexOf(key);
+        if (c >= 0) rows[r][c] = patch[key];
+      });
+      sheet.getRange(r + 1, 1, 1, headers.length).setValues([rows[r]]);
+      logAction_('UPDATE_' + String(entity).toUpperCase(), id, patch);
+      return readRowObject_(headers, rows[r]);
+    }
+  }
+  throw new Error('Record not found: ' + id);
+}
+
+function deleteRecord_(entity, id) {
+  const sheet = getEntitySheet_(entity);
+  const rows = sheet.getDataRange().getValues();
+  const headers = rows[0];
+  const idColumn = headers.indexOf('ID') >= 0 ? headers.indexOf('ID') : headers.indexOf('id');
+
+  for (let r = 1; r < rows.length; r++) {
+    if (String(rows[r][idColumn]) === String(id)) {
+      sheet.deleteRow(r + 1);
+      logAction_('DELETE_' + String(entity).toUpperCase(), id, {});
+      return { id: id, deleted: true };
+    }
+  }
+  throw new Error('Record not found: ' + id);
+}
+
+function readRowObject_(headers, row) {
+  const object = {};
+  headers.forEach(function(header, index) { object[header] = row[index]; });
+  return object;
 }
 
 /* -------------------------------------------------------------------------- */
