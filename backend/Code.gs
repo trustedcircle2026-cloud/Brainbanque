@@ -25,6 +25,7 @@ const CONFIG = {
 
   // Set these before production. Leave empty during first-time setup.
   ADMIN_EMAIL: '',
+  ADMIN_PASSWORD: '1470',
   SESSION_TTL_SECONDS: 21600,
 
   SHEETS: {
@@ -115,6 +116,9 @@ function doPost(e) {
 
       case 'login':
         return json_({ success: true, data: login_(body.email, body.name) });
+
+      case 'adminLogin':
+        return json_({ success: true, data: adminLogin_(body.password) });
 
       case 'logout':
         return json_({ success: true, data: logout_(body.token) });
@@ -327,6 +331,33 @@ function login_(email, name) {
   return {
     token: token,
     user: { email: email, name: name || email.split('@')[0], role: role },
+    expiresAt: new Date(now + CONFIG.SESSION_TTL_SECONDS * 1000).toISOString()
+  };
+}
+
+function adminLogin_(password) {
+  if (String(password || '') !== String(CONFIG.ADMIN_PASSWORD)) {
+    throw new Error('Invalid administrator password.');
+  }
+
+  const props = PropertiesService.getScriptProperties();
+  const token = Utilities.getUuid() + '-' + Utilities.getUuid();
+  const now = Date.now();
+  const email = clean_(CONFIG.ADMIN_EMAIL) || 'admin@brainbanque.in';
+  const name = 'Administrator';
+
+  props.setProperty('SESSION_' + token, JSON.stringify({
+    token: token,
+    email: email,
+    name: name,
+    role: 'Admin',
+    createdAt: now,
+    expiresAt: now + CONFIG.SESSION_TTL_SECONDS * 1000
+  }));
+
+  return {
+    token: token,
+    user: { email: email, name: name, role: 'Admin' },
     expiresAt: new Date(now + CONFIG.SESSION_TTL_SECONDS * 1000).toISOString()
   };
 }
