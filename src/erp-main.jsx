@@ -1,0 +1,1 @@
+import React from 'react';import ReactDOM from 'react-dom/client';import ERPApp from './ERP';import './styles.css';import './erp.css';ReactDOM.createRoot(document.getElementById('root')).render(<ERPApp/>);
