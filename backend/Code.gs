@@ -238,7 +238,6 @@ function listRecords_(entity, filters, token) {
 }
 
 function createRecord_(entity, input) {
-  requireAuth_('', entity, 'create');
   const sheet = getEntitySheet_(entity);
   const id = clean_(input.ID || input.id) || generateId_(String(entity).slice(0, 3).toUpperCase());
   const data = Object.assign({}, input, { ID: id, id: id });
@@ -254,7 +253,6 @@ function createRecord_(entity, input) {
 }
 
 function updateRecord_(entity, id, patch) {
-  requireAuth_('', entity, 'update');
   const sheet = getEntitySheet_(entity);
   const rows = sheet.getDataRange().getValues();
   if (rows.length < 2) throw new Error('Record not found.');
