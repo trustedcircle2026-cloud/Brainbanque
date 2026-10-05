@@ -45,11 +45,11 @@
 .footer-admin-form>button{margin-top:9px;width:100%;border:0;border-radius:5px;padding:11px 13px;background:#173b35;color:#fff;font:inherit;font-size:11px;font-weight:700;display:flex;justify-content:center;align-items:center;gap:7px;cursor:pointer}
 .footer-admin-form>button:disabled{opacity:.6;cursor:wait}
 .footer-admin-error{margin-top:9px;padding:8px 10px;border-radius:4px;background:#fff0ef;color:#9d3934;font-size:9px;line-height:1.5}
-.erp-login-brand{width:100%;margin:0 0 34px;text-align:center}
-.erp-login-brand img{display:block;width:100%;height:auto;max-height:150px;object-fit:contain;object-position:center}
+.login-card{min-width:0;overflow:hidden}
+.erp-login-brand{width:100%;height:112px;margin:0 0 30px;text-align:center;display:flex;align-items:center;justify-content:center;overflow:hidden;min-width:0}
+.erp-login-brand img{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center}
 @media(max-width:600px){
   .footer-admin-access{justify-content:flex-start}
   .footer-admin-form{width:100%}
-  .erp-login-brand{margin-bottom:28px}
-  .erp-login-brand img{max-height:115px}
+  .erp-login-brand{height:88px;margin-bottom:24px}
 }
