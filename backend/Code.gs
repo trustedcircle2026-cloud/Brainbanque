@@ -25,7 +25,6 @@ const CONFIG = {
 
   // Set these before production. Leave empty during first-time setup.
   ADMIN_EMAIL: '',
-  ADMIN_PASSWORD: '1470',
   SESSION_TTL_SECONDS: 21600,
 
   SHEETS: {
@@ -353,7 +352,11 @@ function secureHash_(value) {
 }
 
 function adminLogin_(password) {
-  if (String(password || '') !== String(CONFIG.ADMIN_PASSWORD)) {
+  const storedPassword = PropertiesService.getScriptProperties().getProperty('DEVELOPER_ADMIN_PASSWORD');
+  if (!storedPassword) {
+    throw new Error('Administrator password is not configured in Apps Script Script Properties.');
+  }
+  if (String(password || '') !== String(storedPassword)) {
     throw new Error('Invalid administrator password.');
   }
 
