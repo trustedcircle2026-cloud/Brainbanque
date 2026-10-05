@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { ArrowRight, CheckCircle2, Mail, MessageCircle, Phone, ShieldCheck, Sparkles, BriefcaseBusiness, Scale, Landmark, FileText, Gavel } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Mail, MessageCircle, ShieldCheck, Sparkles, BriefcaseBusiness, Scale, Landmark, FileText, Gavel, Menu, X } from 'lucide-react'
 import { api } from './api'
 
 const base = import.meta.env.BASE_URL
@@ -22,20 +22,28 @@ const services = [
   ['Compliance & Outsourcing','Reliable recurring compliance and outsourced back-office execution.',CheckCircle2]
 ]
 
+function pageHref(file){ return `${base}${file}` }
+function warmPage(file){
+  try{const href=pageHref(file);if(!document.querySelector(`link[data-prefetch="${file}"]`)){const l=document.createElement('link');l.rel='prefetch';l.href=href;l.dataset.prefetch=file;document.head.appendChild(l)}}catch{}
+}
 function Header(){
+  const [open,setOpen]=useState(false)
+  const close=()=>setOpen(false)
   return <header className="site-header">
-    <a className="site-brand" href="index.html">
+    <a className="site-brand" href={pageHref('index.html')} onMouseEnter={()=>warmPage('index.html')} onFocus={()=>warmPage('index.html')}>
       <img src={logo} alt="BrainBanque Global Solutions"/>
       <span><strong><i>Brain</i><b>Banque</b></strong><small>Global Solutions (P) Ltd</small></span>
     </a>
     <nav className="site-nav">
-      {nav.map(([label,href])=><a key={href} href={href}>{label}</a>)}
+      {nav.map(([label,href])=><a key={href} href={pageHref(href)} onMouseEnter={()=>warmPage(href)} onFocus={()=>warmPage(href)} onClick={close}>{label}</a>)}
       <div className="header-contact">
         <a className="header-icon-link" href={whatsapp} target="_blank" rel="noreferrer" title="WhatsApp: 9003060652" aria-label="WhatsApp: 9003060652"><MessageCircle size={17}/></a>
         <a className="header-icon-link" href={email} title="Email: Info@Brainbanque.in" aria-label="Email: Info@Brainbanque.in"><Mail size={17}/></a>
       </div>
-      <a className="site-login" href="index.html#/erp">Login <ArrowRight size={15}/></a>
+      <a className="site-login" href={pageHref('index.html')+'#/erp'} onClick={close}>Login <ArrowRight size={15}/></a>
+      <button className="mobile-menu-btn" type="button" aria-label={open?'Close navigation':'Open navigation'} aria-expanded={open} onClick={()=>setOpen(!open)}>{open?<X size={21}/>:<Menu size={21}/>}</button>
     </nav>
+    {open&&<div className="mobile-nav">{nav.map(([label,href])=><a key={href} href={pageHref(href)} onMouseEnter={()=>warmPage(href)} onClick={close}>{label}<ArrowRight size={15}/></a>)}<a href={pageHref('index.html')+'#/erp'} onClick={close}>Login <ArrowRight size={15}/></a><div className="mobile-contact"><a href={whatsapp} target="_blank" rel="noreferrer">WhatsApp</a><a href={email}>Email</a></div></div>}
   </header>
 }
 
@@ -47,8 +55,8 @@ function Footer(){
         <p>Professional expertise. Clear direction. Coordinated execution.</p>
       </div>
       <div><h4>Explore</h4>{nav.map(([label,href])=><a key={href} href={href}>{label}</a>)}</div>
-      <div><h4>Connect</h4><a href={whatsapp} target="_blank" rel="noreferrer"><MessageCircle size={14}/> WhatsApp</a><a href={email}><Mail size={14}/> Email us</a><a href="index.html#/erp">ERP Login</a></div>
-      <div><h4>Start a conversation</h4><p>Tell us what you need help with and we will identify the right path.</p><a className="footer-cta" href="contact.html">Contact BrainBanque <ArrowRight size={15}/></a></div>
+      <div><h4>Connect</h4><a href={whatsapp} target="_blank" rel="noreferrer"><MessageCircle size={14}/> WhatsApp</a><a href={email}><Mail size={14}/> Email us</a><a href={pageHref('index.html')+'#/erp'}>ERP Login</a></div>
+      <div><h4>Start a conversation</h4><p>Tell us what you need help with and we will identify the right path.</p><a className="footer-cta" href={pageHref('contact.html')}>Contact BrainBanque <ArrowRight size={15}/></a></div>
     </div>
     <div className="footer-bottom"><span>© {new Date().getFullYear()} BrainBanque Global Solutions (P) Ltd. All rights reserved.</span><span>Privacy Policy · Terms of Use</span></div>
   </footer>
@@ -63,7 +71,7 @@ function Home(){
         <span className="site-kicker">PROFESSIONAL SERVICES · ADVISORY · EXECUTION</span>
         <h1>Complex work.<em>Clear direction.</em></h1>
         <p>BrainBanque brings together multidisciplinary professional expertise to help businesses navigate finance, taxation, compliance, legal and advisory requirements.</p>
-        <div className="hero-actions"><a className="primary-btn" href="contact.html">Discuss your requirement <ArrowRight size={17}/></a><a className="text-btn" href="services.html">Explore services <ArrowRight size={16}/></a></div>
+        <div className="hero-actions"><a className="primary-btn" href={pageHref('contact.html')}>Discuss your requirement <ArrowRight size={17}/></a><a className="text-btn" href={pageHref('services.html')}>Explore services <ArrowRight size={16}/></a></div>
       </div>
       <div className="hero-mark"><div className="mark-rings"></div><img src={logo} alt="BrainBanque logo"/></div>
     </section>
@@ -81,8 +89,8 @@ function Home(){
 
     <Reveal><section className="home-section soft-section">
       <div className="section-intro"><span className="site-kicker">OUR CAPABILITIES</span><h2>Professional services for the decisions and work behind the business.</h2></div>
-      <div className="service-mini-grid">{services.slice(0,6).map(([name,desc,Icon])=><a href="services.html" className="service-mini" key={name}><Icon/><h3>{name}</h3><p>{desc}</p><ArrowRight size={16}/></a>)}</div>
-      <a className="primary-btn centered-btn" href="services.html">View all services <ArrowRight size={16}/></a>
+      <div className="service-mini-grid">{services.slice(0,6).map(([name,desc,Icon])=><a href={pageHref('services.html')} className="service-mini" key={name}><Icon/><h3>{name}</h3><p>{desc}</p><ArrowRight size={16}/></a>)}</div>
+      <a className="primary-btn centered-btn" href={pageHref('services.html')}>View all services <ArrowRight size={16}/></a>
     </section></Reveal>
 
     <Reveal><section className="home-section split-section">
@@ -90,7 +98,7 @@ function Home(){
       <div className="process-list"><div><b>01</b><span><strong>Understand</strong> We clarify the requirement, context and outcome.</span></div><div><b>02</b><span><strong>Coordinate</strong> We bring the relevant professional capabilities together.</span></div><div><b>03</b><span><strong>Execute</strong> We drive the work toward a clear, usable outcome.</span></div></div>
     </section></Reveal>
 
-    <Reveal><section className="home-cta"><span className="site-kicker">READY WHEN YOU ARE</span><h2>Have something that needs to get done?</h2><p>Tell us what you are working through. We will help identify the right professional path.</p><a className="primary-btn light-btn" href="contact.html">Start a conversation <ArrowRight size={17}/></a></section></Reveal>
+    <Reveal><section className="home-cta"><span className="site-kicker">READY WHEN YOU ARE</span><h2>Have something that needs to get done?</h2><p>Tell us what you are working through. We will help identify the right professional path.</p><a className="primary-btn light-btn" href={pageHref('contact.html')}>Start a conversation <ArrowRight size={17}/></a></section></Reveal>
   </>
 }
 
@@ -102,7 +110,7 @@ function About(){
 }
 
 function Services(){
-  return <Page title="Services built for the work behind the business." kicker="SERVICES"><div className="detail-service-grid">{services.map(([name,desc,Icon])=><article key={name}><div className="icon-box"><Icon/></div><h3>{name}</h3><p>{desc}</p><a href="contact.html">Discuss this service <ArrowRight size={15}/></a></article>)}</div></Page>
+  return <Page title="Services built for the work behind the business." kicker="SERVICES"><div className="detail-service-grid">{services.map(([name,desc,Icon])=><article key={name}><div className="icon-box"><Icon/></div><h3>{name}</h3><p>{desc}</p><a href={pageHref('contact.html')}>Discuss this service <ArrowRight size={15}/></a></article>)}</div></Page>
 }
 
 function Expertise(){
