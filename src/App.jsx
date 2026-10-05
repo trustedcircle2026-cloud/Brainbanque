@@ -41,7 +41,7 @@ function App() {
   return <div className="site">
     <header className="nav">
       <a className="brand" href="#top" onClick={()=>setMenu(false)}>
-        <img className="brand-logo" src="/logo/brainbanque-logo.jpg" alt="Brainbanque" />
+        <img className="brand-logo" src={`${import.meta.env.BASE_URL}logo/brainbanque-logo.jpg`} alt="Brainbanque" />
       </a>
       <button className="menu-btn" onClick={()=>setMenu(!menu)} aria-label="Menu">{menu?<X/>:<Menu/>}</button>
       <nav className={menu?'nav-links open':'nav-links'}>
@@ -105,7 +105,7 @@ function App() {
       </section>
     </main>
 
-    <footer className="footer"><div className="brand"><img className="brand-logo footer-logo" src="/logo/brainbanque-logo.jpg" alt="Brainbanque" /></div><p>Advisory. Expertise. Execution.</p><div>© {new Date().getFullYear()} Brainbanque. All rights reserved.</div></footer>
+    <footer className="footer"><div className="brand"><img className="brand-logo footer-logo" src={`${import.meta.env.BASE_URL}logo/brainbanque-logo.jpg`} alt="Brainbanque" /></div><p>Advisory. Expertise. Execution.</p><div>© {new Date().getFullYear()} Brainbanque. All rights reserved.</div></footer>
   </div>
 }
 export default App
