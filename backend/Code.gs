@@ -115,7 +115,7 @@ function doPost(e) {
         return json_({ success: true, data: deleteRecord_(body.entity, body.id, getBearerToken_(e)) });
 
       case 'login':
-        return json_({ success: true, data: login_(body.email, body.name) });
+        return json_({ success: true, data: login_(body.email, body.password) });
 
       case 'adminLogin':
         return json_({ success: true, data: adminLogin_(body.password) });
@@ -306,33 +306,50 @@ function readRowObject_(headers, row) {
 /* Authentication & Authorization                                              */
 /* -------------------------------------------------------------------------- */
 
-function login_(email, name) {
+function login_(email, password) {
   email = clean_(email).toLowerCase();
-  name = clean_(name);
+  password = String(password || '');
+  if (!email || email.indexOf('@') < 1) throw new Error('Valid work email is required.');
+  if (!password) throw new Error('Password is required.');
 
-  if (!email || email.indexOf('@') < 1) throw new Error('Valid email is required.');
+  const sheet = getDatabaseSheet_(CONFIG.SHEETS.USERS);
+  if (!sheet) throw new Error('Users database is not initialized.');
+  const rows = readObjects_(sheet);
+  const user = rows.find(function(row) {
+    return String(row.Email || '').trim().toLowerCase() === email &&
+      String(row.Status || 'Active').toLowerCase() === 'active';
+  });
+  if (!user) throw new Error('Invalid work email or password.');
+  if (secureHash_(password) !== String(user.PasswordHash)) throw new Error('Invalid work email or password.');
 
-  const props = PropertiesService.getScriptProperties();
-  const admin = clean_(CONFIG.ADMIN_EMAIL).toLowerCase();
-  const role = admin && email === admin ? 'Admin' : 'Staff';
+  const now = new Date();
+  updateRecord_('users', user.ID, { LastLogin: now });
 
   const token = Utilities.getUuid() + '-' + Utilities.getUuid();
-  const now = Date.now();
-
+  const props = PropertiesService.getScriptProperties();
+  const timestamp = Date.now();
   props.setProperty('SESSION_' + token, JSON.stringify({
     token: token,
     email: email,
-    name: name || email.split('@')[0],
-    role: role,
-    createdAt: now,
-    expiresAt: now + CONFIG.SESSION_TTL_SECONDS * 1000
+    name: user.Name || email.split('@')[0],
+    role: user.Role || 'Staff',
+    createdAt: timestamp,
+    expiresAt: timestamp + CONFIG.SESSION_TTL_SECONDS * 1000
   }));
 
   return {
     token: token,
-    user: { email: email, name: name || email.split('@')[0], role: role },
-    expiresAt: new Date(now + CONFIG.SESSION_TTL_SECONDS * 1000).toISOString()
+    user: { email: email, name: user.Name || email.split('@')[0], role: user.Role || 'Staff' },
+    expiresAt: new Date(timestamp + CONFIG.SESSION_TTL_SECONDS * 1000).toISOString()
   };
+}
+
+function secureHash_(value) {
+  const digest = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, String(value), Utilities.Charset.UTF_8);
+  return digest.map(function(byte) {
+    const v = (byte < 0 ? byte + 256 : byte).toString(16);
+    return v.length === 1 ? '0' + v : v;
+  }).join('');
 }
 
 function adminLogin_(password) {
@@ -537,7 +554,7 @@ function getHeadersForSheet_(sheetName) {
   ];
 
   schemas[CONFIG.SHEETS.USERS] = [
-    'ID', 'CreatedAt', 'Name', 'Email', 'Role', 'Status', 'LastLogin'
+    'ID', 'CreatedAt', 'Name', 'Email', 'PasswordHash', 'Role', 'Status', 'LastLogin'
   ];
 
   schemas[CONFIG.SHEETS.ENGAGEMENTS] = [
@@ -825,7 +842,18 @@ function errorResponse_(error) {
  */
 
 function createRecordAuthenticated_(entity, input, token) {
-  requireAuth_(token, entity, 'create');
+  const session = requireAuth_(token, entity, 'create');
+  if (entity === 'users') {
+    if (session.role !== 'Admin') throw new Error('Administrator access required.');
+    const data = Object.assign({}, input);
+    const password = String(data.Password || '');
+    delete data.Password;
+    if (!password) throw new Error('User password is required.');
+    data.PasswordHash = secureHash_(password);
+    data.Role = data.Role || 'Staff';
+    data.Status = data.Status || 'Active';
+    return createRecord_(entity, data);
+  }
   return createRecord_(entity, input);
 }
 
