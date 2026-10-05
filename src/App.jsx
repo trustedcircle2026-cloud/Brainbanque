@@ -67,7 +67,13 @@ function App() {
         </div>
         <div className="hero-panel">
           <div className="panel-top"><span>BB / 01</span><span>ADVISORY PLATFORM</span></div>
-          <div className="orb"><span>BB</span></div>
+          <div className="hero-logo-orb" aria-label="BrainBanque logo">
+            <div className="logo-ring logo-ring-one"></div>
+            <div className="logo-ring logo-ring-two"></div>
+            <div className="logo-ring logo-ring-three"></div>
+            <div className="logo-smile"></div>
+            <img src={`${import.meta.env.BASE_URL}logo/Brainbanque-logo%20without%20BG.jpg`} alt="BrainBanque Global Solutions" />
+          </div>
           <div className="panel-bottom"><strong>One coordinated team.</strong><span>Multiple professional disciplines.</span></div>
         </div>
       </section>
