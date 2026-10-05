@@ -64,3 +64,30 @@ POST JSON:
 Do not place API keys, passwords, OAuth secrets or other credentials in this repository.
 
 Before production, replace the development CORS/origin approach with a controlled production-domain strategy and add authentication/authorization for ERP endpoints.
+
+### ERP CRUD API
+
+GET records:
+`GET ?action=list&entity=clients`
+
+Optional exact-match filters:
+`GET ?action=list&entity=clients&filters={"Status":"Active"}`
+
+POST create:
+```json
+{"action":"create","entity":"clients","data":{"Name":"Example Client","Status":"Active"}}
+```
+
+POST update:
+```json
+{"action":"update","entity":"clients","id":"CLI-123","data":{"Status":"Inactive"}}
+```
+
+POST delete:
+```json
+{"action":"delete","entity":"clients","id":"CLI-123"}
+```
+
+Supported entities: `settings`, `services`, `enquiries`, `clients`, `contacts`, `users`, `engagements`, `tasks`, `documents`, `auditLog`.
+
+> The generic CRUD endpoints are intended for the internal ERP layer. Authentication/authorization should be added before exposing ERP actions publicly.
