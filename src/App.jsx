@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowRight, BriefcaseBusiness, ChevronRight, CircleCheck, FileText, Gavel, Landmark, Mail, Menu, MessageCircle, ShieldCheck, Sparkles, X } from 'lucide-react'
 import { api } from './api'
+import { erpApi } from './erpApi'
 
 const staticServices = [
   { name: 'Accounting & Finance', category: 'Finance', description: 'Accounting, financial reporting and finance support.' },
@@ -24,6 +25,10 @@ function App() {
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
   const [form, setForm] = useState({ name:'', email:'', phone:'', company:'', service:'', message:'' })
+  const [adminOpen, setAdminOpen] = useState(false)
+  const [adminPassword, setAdminPassword] = useState('')
+  const [adminLoading, setAdminLoading] = useState(false)
+  const [adminError, setAdminError] = useState('')
 
   useEffect(() => {
     api.services().then(setServices).catch(() => {})
@@ -42,6 +47,21 @@ function App() {
     items.forEach(item => observer.observe(item))
     return () => observer.disconnect()
   }, [services])
+
+  const submitAdmin = async (e) => {
+    e.preventDefault()
+    setAdminLoading(true)
+    setAdminError('')
+    try {
+      const session = await erpApi.adminLogin(adminPassword)
+      localStorage.setItem('bb_session', JSON.stringify(session))
+      window.location.hash = '#/erp-admin'
+    } catch (err) {
+      setAdminError(err.message || 'Unable to sign in.')
+    } finally {
+      setAdminLoading(false)
+    }
+  }
 
   const submit = async (e) => {
     e.preventDefault(); setError(''); setSending(true)
