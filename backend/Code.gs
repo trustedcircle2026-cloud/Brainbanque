@@ -444,6 +444,13 @@ function initializeDatabase_() {
       sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
       sheet.setFrozenRows(1);
       sheet.autoResizeColumns(1, headers.length);
+    } else {
+      const existingHeaders = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(String);
+      headers.forEach(function(header) {
+        if (existingHeaders.indexOf(header) < 0) {
+          sheet.getRange(1, sheet.getLastColumn() + 1).setValue(header);
+        }
+      });
     }
   });
 
