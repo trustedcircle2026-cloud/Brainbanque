@@ -10,7 +10,7 @@ export const erpApi={
  login:(email,name)=>call('login',{email,name}),
  logout:(token)=>call('logout',{token}),
  me:(token)=>call('me',null,token),
- list:(entity,token,filters)=>call('list',null,token).then(rows=>filters?rows.filter(r=>Object.entries(filters).every(([k,v])=>String(r[k]||'').toLowerCase()===String(v).toLowerCase())):rows),
+ list:(entity,token,filters)=>{ const qs = new URLSearchParams({action:'list',entity,token}); return fetch((import.meta.env.VITE_API_URL||'')+'?'+qs).then(r=>r.json()).then(x=>{if(!x.success)throw new Error(x.error||'Request failed');return filters?x.data.filter(r=>Object.entries(filters).every(([k,v])=>String(r[k]||'').toLowerCase()===String(v).toLowerCase())):x.data}) },
  create:(entity,data,token)=>call('create',{entity,data},token),
  update:(entity,id,data,token)=>call('update',{entity,id,data},token),
  delete:(entity,id,token)=>call('delete',{entity,id},token)
